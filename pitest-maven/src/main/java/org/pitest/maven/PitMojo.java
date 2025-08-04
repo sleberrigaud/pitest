@@ -344,6 +344,12 @@ public final class PitMojo extends AbstractMojo {
   private boolean                     skipTests;
 
   /**
+   * Allows ignoring the `skipTests` flag. Using this flag will run PIT even if `skipTests` is set to true.
+   */
+  @Parameter(property = "pitestIgnoreSkipTests", defaultValue = "false")
+  private boolean                     pitestIgnoreSkipTests;
+
+  /**
    * Mutate code outside current module
    */
   @Parameter(property = "crossModule", defaultValue = "false")
@@ -757,8 +763,8 @@ public final class PitMojo extends AbstractMojo {
       decision.addReason("Execution of PIT should be skipped.");
     }
 
-    if (this.skipTests) {
-      decision.addReason("Test execution should be skipped (-DskipTests).");
+    if (!pitestIgnoreSkipTests && this.skipTests) {
+      decision.addReason("Test execution should be skipped (-DskipTests). Use -DpitestIgnoreSkipTests to override this.");
     }
 
     if ("pom".equalsIgnoreCase(this.project.getPackaging())) {

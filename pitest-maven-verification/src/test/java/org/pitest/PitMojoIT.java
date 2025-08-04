@@ -361,6 +361,19 @@ public class PitMojoIT {
   }
 
   @Test
+  public void shouldExecuteWhenSkipTestsFlagActiveAndIgnoreSkipTestsActive() throws Exception {
+    File testDir = prepare("/pit-skipTests-active");
+    verifier.addCliOption("-DskipTests");
+    verifier.addCliOption("-DpitestIgnoreSkipTests");
+    verifier.executeGoal("test");
+    verifier.executeGoal("org.pitest:pitest-maven:mutationCoverage");
+
+    // isDirectoryNotContaining is not recursive
+    assertThat(new File(testDir, "target")).isDirectoryNotContaining("glob:**/surefire-reports");
+    assertThat(readResults(testDir)).isNotEmpty();
+  }
+
+  @Test
   public void shouldWorkWithGWTMockito() throws Exception {
     skipIfJavaVersionNotSupportByThirdParty();
     File testDir = prepare("/pit-183-gwtmockito");
